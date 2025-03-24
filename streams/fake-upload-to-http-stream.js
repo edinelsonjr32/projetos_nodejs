@@ -5,7 +5,7 @@
         _read(){
             const i = this.index++
             setTimeout(()=>{
-                if (i > 100){
+                if (i > 5){
                     this.push(null)
                 }else{
         
@@ -20,4 +20,8 @@
         method: 'POST',
         body: new OneToHundredStream(),
         duplex: 'half' // adicione essa linha
-    });
+    }).then(res => {
+        return res.text()
+      }).then(data => {
+        console.log(data)
+      })
