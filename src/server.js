@@ -1,47 +1,67 @@
+import http from "node:http";
 
-import http from 'node:http'
+// - Criar usuários
+// - Listagem usuários
+// - Edição de usuários
+// - Remoção de usuários
 
-//criar um usuário (name, email, senha)
+// - HTTP
+//   - Método HTTP
+//   - URL
 
-/**
- * HTTP
- * 
- * - Método HTTP
- * 
- * - URL
- * 
- * GET POST, PUT, PATCH e DELETE
- * 
- * GET => BUSCAR BACK-END
- * POST => CRIAR UM RECURSO NO BACK-END
- * PUT => ATUALIZAR RECURSO NO BACK-END
- * PATCH => ATUALIZAR UMA INFORMAÇÃO ESPECIFICA BACK-END
- * DELETE => REMOVER UM RECURSO NO BACK-END
- * 
- */
+// GET, POST, PUT, PATCH, DELETE
 
-//cabeçalho (requisição e resposta)  => Metadados
+// GET => Buscar um recurso do back-end
+// POST => Criar um recurso no back-end
+// PUT => Atualizar um recurso no back-end
+// PATCH => Atualizar uma informação específica de um recurso no back-end
+// DELETE => Deletar um recurso do back-end
 
-const users = []
-const server = http.createServer((req, res)=>{
-    const { method, url} = req
-    
-    if (method == 'GET' && url == '/users'){
-        return res
-        .setHeader('Content-type', 'application/json')
-        .end(JSON.stringify(users))
-    }
-    if (method == 'POST' && url == '/users'){
-        users.push({
-            id: users.length +1,
-            name: 'John Doe',
-            email: 'johndoe@example.com'
-        })
-        return res.writeHead(201).end()
-    }
-    return res.writeHead(404).end('Rota não Encontrada')
-})
+// GET /users => Buscando usuários no banc-end
+// POST /users => Criar um usuário no back-end
 
-server.listen(3333)
+// Stateful - Stateless
 
-//localhost:3333
+// Cabeçalhos (Requisição/resposta) => Metadados
+
+// HTTP Status Code
+
+const users = [];
+
+const server = http.createServer(async (req, res) => {
+  const { method, url } = req;
+
+  const buffers = [];
+
+  for await (const chunk of req) {
+    buffers.push(chunk);
+  }
+
+  try {
+    req.body = JSON.parse(Buffer.concat(buffers).toString());
+  } catch {
+    req.body = null;
+  }
+
+  if (method === "GET" && url === "/users") {
+    return res
+      .setHeader("Content-type", "application/json")
+      .end(JSON.stringify(users));
+  }
+
+  if (method === "POST" && url === "/users") {
+    const { name, email } = req.body;
+
+    users.push({
+      id: users.length + 1,
+      name,
+      email,
+    });
+
+    return res.writeHead(201).end();
+  }
+
+  return res.writeHead(404).end();
+});
+
+server.listen(3333);
