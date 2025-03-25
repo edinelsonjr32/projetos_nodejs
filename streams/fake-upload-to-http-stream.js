@@ -20,4 +20,8 @@
         method: 'POST',
         body: new OneToHundredStream(),
         duplex: 'half' // adicione essa linha
-    });
+    }).then(
+        response => {
+            response.text().
+        }
+    )
